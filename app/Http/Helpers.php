@@ -1357,8 +1357,8 @@ if (!function_exists('checkout_done')) {
             $order->save();
 
             // Order paid notification to Customer, Seller, & Admin
-            EmailUtility::order_email($order, 'paid'); 
-            
+            EmailUtility::order_email($order, 'paid');
+
             try {
                 NotificationUtility::sendOrderPlacedNotification($order);
                 calculateCommissionAffilationClubPoint($order);
@@ -1917,6 +1917,13 @@ if (!function_exists('get_all_brands')) {
         return  $brand_query->get();
     }
 }
+// Get all top brands
+if (!function_exists('get_top_brands')) {
+    function get_top_brands()
+    {
+        return Brand::where('top', 1)->get();
+    }
+}
 
 // Get single brands
 if (!function_exists('get_brands')) {
@@ -1946,6 +1953,17 @@ if (!function_exists('get_brands_by_products')) {
 
         $brand_query = Brand::query();
         return $brand_query->whereIn('id', $brand_ids)->get();
+    }
+}
+
+
+// Get top Brands by products
+if (!function_exists('get_top_brands_products')) {
+    function get_top_brands_products($limit = 20)
+    {
+        return Product::whereHas('brand', function ($query) {
+            $query->where('top', true);
+        })->latest()->take($limit)->get();
     }
 }
 

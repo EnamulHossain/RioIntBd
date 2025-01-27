@@ -770,4 +770,18 @@ class HomeController extends Controller
         $sql_path = base_path('public/uploads/demo_data.sql');
         DB::unprepared(file_get_contents($sql_path));
     }
+
+    public function filterBrandProducts(Request $request)
+    {
+
+        $brand_id = $request->brand_id;
+
+        // Fetch products based on the selected brand
+        $products = Product::where('brand_id', $brand_id)->get();
+        dd($products);
+
+        $html = view('frontend.partials.product_box_1', compact('products'))->render();
+
+        return response()->json(['html' => $html]);
+    }
 }

@@ -151,6 +151,7 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/sellers', 'all_seller')->name('sellers');
     Route::get('/coupons', 'all_coupons')->name('coupons.all');
     Route::get('/inhouse', 'inhouse_products')->name('inhouse.all');
+    Route::get('/filter-brand-products', 'filterBrandProducts')->name('filter.brand.products');
 
 
     // Policies
@@ -377,7 +378,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::controller(NoteController::class)->group(function () {
         Route::post('/get-notes', 'getNotes')->name('get_notes');
         Route::get('/get-single-note/{id}', 'getSingleNote')->name('get-single-note');
-        
+
     });
 });
 
