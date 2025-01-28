@@ -777,11 +777,14 @@ class HomeController extends Controller
         $brand_id = $request->brand_id;
 
         // Fetch products based on the selected brand
-        $products = Product::where('brand_id', $brand_id)->get();
-        dd($products);
+        $top_brands_products = Product::where('brand_id', $brand_id)->get();
+        //dd($products);
 
-        $html = view('frontend.partials.product_box_1', compact('products'))->render();
-
+        $html = '';
+        foreach ($top_brands_products as $product) {
+            $html .= view('frontend.' . get_setting('homepage_select') . '.partials.product_box_1', compact('product'))->render();
+        }
+        //dd($html);
         return response()->json(['html' => $html]);
     }
 }

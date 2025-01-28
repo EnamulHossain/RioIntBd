@@ -344,8 +344,6 @@
         @if (count($top_brands_products) > 0)
             <section class="mb-2 mb-md-3 mt-2 mt-md-3">
                 <div class="container">
-
-
                     <!-- Top Section -->
                     <div class="d-flex mb-2 mb-md-3 align-items-baseline justify-content-between">
                         <!-- Title -->
@@ -370,7 +368,7 @@
                     <div class="d-flex mb-3">
                         @foreach ($top_brands as $brand)
                             <button class="brand-filter btn btn-light mr-2 @if($loop->first) active @endif"
-                                    data-brand="{{ $brand }}"  data-brand-id="{{ $brand->id }}">
+                                    data-brand="{{ $brand }}" data-brand-id="{{ $brand->id }}">
                                 {{ $brand->name }}
                             </button>
                         @endforeach
@@ -383,7 +381,7 @@
                              data-sm-items="2" data-xs-items="2"
                              data-arrows='true' data-infinite='false'>
                             @foreach ($top_brands_products as $key => $product)
-                                <div
+                                <div id="brand-products"
                                     class=" product-item carousel-box px-3 position-relative has-transition hov-animate-outline border-right border-top border-bottom @if($key == 0) border-left @endif">
                                     @include('frontend.'.get_setting('homepage_select').'.partials.product_box_1', ['product' => $product])
                                 </div>
@@ -764,39 +762,6 @@
         </section>
     @endif
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('.brand-filter').click(function () {
-                // Remove active class from all buttons
-                $('.brand-filter').removeClass('active');
-                $(this).addClass('active');
-
-                var brandId = $(this).data('brand-id');
-
-                console.log(brandId);
-
-                // Fetch products via AJAX
-                $.ajax({
-                    url: "{{ route('filter.brand.products') }}",  // Create this route in web.php
-                    type: "GET",
-                    data: {
-                        brand_id: brandId
-                    },
-                    beforeSend: function () {
-                        $('#brand-products').html('<p>Loading products...</p>');
-                    },
-                    success: function (response) {
-
-                        $('#brand-products').html(response.html);
-                    },
-                    error: function () {
-                        alert('Failed to load products. Please try again.');
-                    }
-                });
-            });
-        });
-    </script>
 
     <style>
         .brand-filter {
@@ -816,5 +781,50 @@
 
     </style>
 
+@endsection
+
+
+@section('script')
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.brand-filter').click(function () {
+                // Remove active class from all buttons
+                $('.brand-filter').removeClass('active');
+                $(this).addClass('active');
+
+                var brandId = $(this).data('brand-id');
+
+                console.log('Selected Brand ID:', brandId);
+
+                // Fetch products via AJAX
+                $.ajax({
+                    url: "{{ route('filter.brand.products') }}", // Laravel route
+                    type: "GET",
+                    data: {
+                        brand_id: brandId,
+                        _token: "{{ csrf_token() }}" // CSRF token for security
+                    },
+                    beforeSend: function () {
+                        $('#brand-products').html(`
+                        <div class="sub-cat-menu c-scrollbar-light border p-4 shadow-none">
+                            <div class="c-preloader text-center absolute-center">
+                                <i class="las la-spinner la-spin la-3x opacity-70"></i>
+                            </div>
+                        </div>
+                    `);
+                    },
+                    success: function (response) {
+                        $('#brand-products').html(response.html);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error:', error);
+                        alert('Failed to load products. Please try again.');
+                    }
+                });
+            });
+        });
+
+    </script>
 @endsection
 
